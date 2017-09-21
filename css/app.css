@@ -112,6 +112,10 @@ h1 {
     background-color: white;
 }
 
+.score-panel .time {
+    margin-left: 30px;
+}
+
 /*
  * Styles for congratulations module
  */

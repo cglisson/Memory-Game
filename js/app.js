@@ -1,5 +1,13 @@
 "use strict";
 
+var seconds = -1;
+
+// Sets the time when the game started.
+var start = setInterval(function() {
+    seconds++;
+    document.getElementsByClassName('time')[0].innerHTML = 'Time elapsed: ' + seconds;
+}, 1000);
+
 function play() {
     /*
      * Create a list that holds all of your cards
@@ -16,18 +24,8 @@ function play() {
     ],
         openCards = [],
         matchingCards = [],
-        startTime, endTime, timeDiff, stars,
+        stars,
         moveCounter = 0;
-
-    // Sets the time when the game started.
-    function start() {
-        startTime = new Date();
-    };
-    // Calculates the length of time of the game.
-    function end() {
-        endTime = new Date();
-        timeDiff = Math.round((endTime - startTime) / 1000);
-    };
 
     // Add Matching Cards.
     var cardLength = cards.length;
@@ -62,8 +60,7 @@ function play() {
     }
 
     displayMoves();
-    start();
-
+    start;
 
     // Shuffle function from http://stackoverflow.com/a/2450976
     function shuffle(array) {
@@ -79,7 +76,6 @@ function play() {
 
         return array;
     }
-
 
     /*
      * set up the event listener for a card. If a card is clicked:
@@ -106,23 +102,18 @@ function play() {
             openCards[0].removeEventListener('click', cardListener);
         } else {
             isMatch = isMatched(this);
-            moveCounter++;
 
+            moveCounter++;
             // How many stars are earned.
             if (moveCounter > 26) {
-                let firstStar = document.getElementsByClassName('stars')[0].getElementsByClassName('fa')[0];
+                let firstStar = document.getElementsByClassName('stars')[0].getElementsByClassName('fa')[1];
                 firstStar.classList.remove('fa-star-o');
                 firstStar.classList.add('fa-star');
-                stars = 0;
-            }else if (moveCounter > 22) {
-                let secondStar = document.getElementsByClassName('stars')[0].getElementsByClassName('fa')[1];
+                stars = 1;
+            }else if (moveCounter > 18) {
+                let secondStar = document.getElementsByClassName('stars')[0].getElementsByClassName('fa')[2];
                 secondStar.classList.remove('fa-star-o');
                 secondStar.classList.add('fa-star');
-                stars = 1;
-            }else if (moveCounter > 16 ) {
-                let thirdStar = document.getElementsByClassName('stars')[0].getElementsByClassName('fa')[2];
-                thirdStar.classList.remove('fa-star-o');
-                thirdStar.classList.add('fa-star');
                 stars = 2;
             }else {
                 stars = 3;
@@ -132,19 +123,18 @@ function play() {
             removeEventListeners();
 
             if (isMatch) {
-                addEventListeners();
                 matched(this);
+
+                addEventListeners();
 
                 // If game is won, calculate the time and display endgame menu.
                 if (matchingCards.length == 16) {
                     let endgame = document.getElementsByClassName('endgame')[0],
                         game = document.getElementsByClassName('game')[0];
 
-                    end();
-
                     // Update score.
                     document.getElementsByClassName('score')[0].innerHTML = 'With ' + moveCounter + ' moves and ' + stars + ' Stars.';
-                    document.getElementsByClassName('time')[0].innerHTML = 'Time: ' + timeDiff + ' seconds.';
+                    document.getElementsByClassName('fTime')[0].innerHTML = 'Time: ' + seconds + ' seconds.';
 
                     game.style.display = 'none';
                     endgame.style.display = 'block';
@@ -171,10 +161,8 @@ function play() {
             // Remove classes in order to hide card.
             card.classList.remove('open', 'show');
             openCards[0].classList.remove('open', 'show');
-            // Put back event listener.
-            openCards[0].addEventListener('click', cardListener, false);
             // Empty openCards.
-            openCards.splice(0, 1)
+            openCards.splice(0, 1);
         }, 500);
     };
 
@@ -202,11 +190,9 @@ function play() {
         // Lock the card in place.
         card.classList.add('match');
         card.classList.remove('open');
-        card.removeEventListener('click', cardListener);
         // Lock the previous card in place.
         openCards[0].classList.add('match');
         openCards[0].classList.remove('open');
-        openCards[0].removeEventListener('click', cardListener);
         // Empty the open cards array and move to matched cards.
         matchingCards.push(card, openCards[0]);
         openCards.splice(0,1);
@@ -237,11 +223,13 @@ function play() {
             for (let i = 0; i < cards.length; i++) {
                 cards[i].addEventListener('click', cardListener, false);
             }
+            // Remove event listener to matched cards.
+            for (var i = 0; i < matchingCards.length; i++) {
+                matchingCards[i].removeEventListener('click', cardListener, false);
+            }
         }, 500);
 
     };
-
-
 };
 
 // Resets the board.
@@ -264,8 +252,13 @@ function reset() {
     // Hide endgame menu.
     document.getElementsByClassName('endgame')[0].style.display = 'none';
 
+    // Reset time.
+    document.getElementsByClassName('time')[0].innerHTML = '';
+    seconds = -1;
+
     // Re-display game.
     document.getElementsByClassName('game')[0].style.display = 'flex';
+
     play();
 };
 
