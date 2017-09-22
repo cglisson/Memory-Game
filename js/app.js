@@ -1,14 +1,21 @@
 "use strict";
 
-var seconds = -1;
-
-// Sets the time when the game started.
-var start = setInterval(function() {
-    seconds++;
-    document.getElementsByClassName('time')[0].innerHTML = 'Time elapsed: ' + seconds;
-}, 1000);
+var seconds = 0,
+    start;
 
 function play() {
+    // Hide play button.
+    document.getElementsByClassName('play')[0].style.display = 'none';
+
+    // Sets the time when the game started.
+    start = setInterval(function() {
+        seconds++;
+        document.getElementsByClassName('time')[0].innerHTML = 'Time elapsed: ' + seconds;
+    }, 1000);
+
+    // Display Time.
+    document.getElementsByClassName('time')[0].innerHTML = 'Time elapsed: ' + seconds;
+
     /*
      * Create a list that holds all of your cards
      */
@@ -60,7 +67,6 @@ function play() {
     }
 
     displayMoves();
-    start;
 
     // Shuffle function from http://stackoverflow.com/a/2450976
     function shuffle(array) {
@@ -254,7 +260,8 @@ function reset() {
 
     // Reset time.
     document.getElementsByClassName('time')[0].innerHTML = '';
-    seconds = -1;
+    clearInterval(start);
+    seconds = 0;
 
     // Re-display game.
     document.getElementsByClassName('game')[0].style.display = 'flex';
@@ -262,10 +269,11 @@ function reset() {
     play();
 };
 
+
 var restart = document.getElementsByClassName('restart');
 var playAgain = document.getElementsByClassName('playAgain');
+var p = document.getElementsByClassName('play');
 
+p[0].addEventListener('click', play, false);
 restart[0].addEventListener('click', reset, false);
 playAgain[0].addEventListener('click', reset, false);
-
-play();
